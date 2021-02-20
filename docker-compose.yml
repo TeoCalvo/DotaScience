@@ -1,0 +1,10 @@
+version: "3"
+services:
+  mongo:
+    container_name: mongo-dota
+    image: mongo:3
+    restart: always
+    volumes:
+      - /run/media/data/db/mongo:/data/db
+    ports:
+      - "27017:27017"
