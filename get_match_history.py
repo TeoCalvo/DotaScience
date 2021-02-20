@@ -20,7 +20,9 @@ def get_matches_batch(min_match_id=None):
 
 def save_matches(data, db_collection):
     '''Salva lista de partidas no banco de dados'''
-    db_collection.insert_many(data)
+    for d in data:
+        db_collection.delete_one( {"match_id": d["match_id"] } )
+        db_collection.insert_one( d )
     return True
 
 def get_and_save( min_match_id=None, max_match_id=None, db_collection=None ):
@@ -36,8 +38,6 @@ def get_and_save( min_match_id=None, max_match_id=None, db_collection=None ):
         if len(data) == 0:
             print("Todas novas partidas foram adicionadas!")
             return False, data
-
-
     
     save_matches(data, db_collection)
     min_match_id = min([i["match_id"] for i in data])
@@ -49,15 +49,16 @@ def get_oldest_matches(db_collection):
     min_match_id = db_collection.find_one(sort=[("match_id",1)])["match_id"]
     count = 1
     while True:
-        check, _ = get_and_save(min_match_id=min_match_id, db_collection=db_collection)
+        check, data = get_and_save(min_match_id=min_match_id, db_collection=db_collection)
         if not check:
             break
+        
+        min_match_id = min([i["match_id"] for i in data])
         count += 1
 
 def get_newest_matches(db_collection):
     try:
         max_match_id = db_collection.find_one(sort=[("match_id",-1)])["match_id"]
-    
     except TypeError:
         max_match_id = 0
 
@@ -73,6 +74,8 @@ def get_newest_matches(db_collection):
         check, data = get_and_save(min_match_id=min_match_id, db_collection=db_collection)
         if not check:
             break
+        
+        min_match_id = min([i["match_id"] for i in data])
         count += 1
 
 def main():
