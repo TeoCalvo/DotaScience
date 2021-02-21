@@ -3,3 +3,5 @@
 *.csv
 *.xlsx
 *.db
+data/
+select.sql
