@@ -81,7 +81,7 @@ def get_newest_matches(db_collection):
 def main():
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--how", choices=["oldest", "newest"])
+    parser.add_argument("--how", choices=["oldest", "newest"], default="newest")
     args = parser.parse_args()
 
     # Carrega o dotenv
