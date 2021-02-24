@@ -19,12 +19,13 @@ def insert_data(query, dt_ref, con):
     con.execute( query )
     return True
 
-def create_data(query, dt_ref, con):
+def create_data(dt_ref, con):
 
     create_query = db.import_query(os.path.join(ECHO_DIR, "create.sql"))
+    select_query = db.import_query(os.path.join(ECHO_DIR, "query.sql"))
 
-    create_query = create_query.format(query=query.format( insert= "", date=dt_ref))
-    con.execute( create_query )
+    query = create_query.format(query=select_query.format( insert= "", date=dt_ref))
+    db.execute_multi_queries(con, query)
     return True
 
 date_now = datetime.datetime.now().strftime("%Y-%m-%d")
@@ -34,11 +35,10 @@ parser.add_argument("--date", help="Data para extração", type=str, default=dat
 parser.add_argument("--create", help="Define se a tabela deve ser criada", action="store_true")
 args = parser.parse_args()
 
-query = db.import_query( os.path.join( ECHO_DIR, "query.sql" ) )
 con = db.open_mariadb()
 
 if args.create:
-    create_data(query, args.date, con)
+    create_data(args.date, con)
 else:
-    insert_data(query, args.date, con)
+    insert_data(args.date, con)
 
