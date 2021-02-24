@@ -15,14 +15,28 @@ Sinta-se livre para contribuir, compartilhar e divulgar este material de forma g
 
 ## Requisitos
 
-Para a preparação de nosso ambiente de dados, utilizamos docker. Portanto, para o projeto funcionar corretamente é necessário ter o docker e docker-compose instalados, bem como executar o comando:
+- Docker & Docker Compose
+- Python
+- Anaconda
+
+## Instalação
+
 ```bash
-docker-compose up -d
+git clone https://github.com/TeoCalvo/DotaScience.git <nome_da_pasta>
+```
+
+```bash
+cd <nome_da_pasta>
 ```
 
 ## Uso
 
-### Preparação do ambiente Python
+### Preparação do ambiente
+
+0. Subindo nosso banco de dados com docker
+```bash
+docker-compose up -d
+```
 
 1. Criando novo ambiente Python
 
