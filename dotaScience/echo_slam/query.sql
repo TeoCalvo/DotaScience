@@ -320,7 +320,7 @@ select account_id,
 
 from tb_match_player
 
-where dt_match >= ADDDATE('2021-02-23' , INTERVAL -6 MONTH)
+where dt_match >= ADDDATE('2021-02-25' , INTERVAL -6 MONTH)
 and game_mode = 02
 
 group by account_id

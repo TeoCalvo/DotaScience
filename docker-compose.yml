@@ -1,11 +1,16 @@
 version: "3"
+
+volumes:
+  mariadb-data:
+  mongodb-data:
+
 services:
-  mongo:
+  mongodb:
     container_name: mongo-dota
     image: mongo:3
     restart: always
     volumes:
-      - /run/media/data/db/mongo:/data/db
+      - mongodb-data:/data/db
     ports:
       - "27017:27017"
 
@@ -14,8 +19,20 @@ services:
     image: mariadb
     restart: unless-stopped
     volumes:
-      - /run/media/data/db/maria:/var/lib/mysql
+      - mariadb-data:/var/lib/mysql
     environment: 
       - MYSQL_ROOT_PASSWORD=teomewhy
     ports:
       - "3306:3306"
+
+  python:
+    build:
+      context: .
+      dockerfile: ./dockerfile
+    container_name: python-dota
+    restart: unless-stopped
+    volumes:
+      - .:/root
+    links:
+      - mongodb
+      - mariadb

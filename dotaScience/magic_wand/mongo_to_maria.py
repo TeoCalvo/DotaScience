@@ -104,12 +104,17 @@ def open_connection_mariadb():
 
 def get_match_list(con, db_collection):
 
+
     query = '''
     SELECT DISTINCT match_id as id_list
     from tb_match_player
     '''
    
-    match_ids_maria = pd.read_sql_query(query, con)["id_list"].tolist()
+    try:
+        match_ids_maria = pd.read_sql_query(query, con)["id_list"].tolist()
+    except:
+        match_ids_maria = []
+    
     match_list = db_collection.find({"match_id" : {"$nin": match_ids_maria}})
     return match_list
 

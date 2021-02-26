@@ -6,10 +6,14 @@ from tqdm import tqdm
 import time
 import json
 
-def get_data(match_id):
+def get_data(match_id, **kwargs):
 
     try:
         url = f"https://api.opendota.com/api/matches/{match_id}"
+
+        if len(kwargs) != 0:
+            url += "?" + "&".join( f"{k}={v}" for k,v in kwargs.items())
+        
         response = requests.get(url)
         data = response.json()
         return data
@@ -20,7 +24,6 @@ def get_data(match_id):
 
 def save_data(data, db_collection):
     try:
-        db_collection.delete_one({"match_id":data["match_id"]})
         db_collection.insert_one(data)
         return True
     except KeyError as err:
@@ -37,21 +40,36 @@ def find_match_ids(mongodb_database):
     match_ids = list(match_history - match_details)
     return match_ids
 
-def main():
-    mongodb_client = MongoClient("localhost", 27017)
+def main(api_key):
+    mongodb_client = MongoClient(MONGODB_IP, MONGODB_PORT)
     mongodb_database = mongodb_client["dota_raw"]
 
     for match_id in tqdm(find_match_ids(mongodb_database)):
-        data = get_data(match_id)
+        data = get_data(match_id, api_key = api_key)
 
-        if data is None:
+        try:
+            _ = data["match_id"]
+            save_data(data, mongodb_database["pro_match_details"])
+
+        except KeyError:
+            try:
+                err = data["error"]
+                print(err)
+                continue
+            except KeyError:
+                time.sleep(2)
+                print(data)
+
+        except TypeError:
+            print(None)
             continue
 
-        if save_data(data, mongodb_database["pro_match_details"]):
-            time.sleep(0.5)
-        else:
-            print(data)
-            time.sleep(60)
-
 if __name__ == "__main__":
-    main()
+    # Carrega o dotenv
+    dotenv.load_dotenv(dotenv.find_dotenv())
+
+    API_KEY = os.getenv("API_KEY")
+    MONGODB_IP = os.getenv("MONGODB_IP")
+    MONGODB_PORT = int(os.getenv("MONGODB_PORT"))
+    
+    main(API_KEY)
