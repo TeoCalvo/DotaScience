@@ -58,26 +58,28 @@ pip install -r requirements.txt
 
 ### Obtendo lista das partidas históricas (profissionais)
 
+**Importante**:todos os comandos são executados dentro do container do serviço do Python.
+
 Ao rodar pela primeira vez, use o argumento '```--how newest```' , coletando assim as partidas mais recentes.
 
 ```bash
-python dotaScience/hook/get_match_history.py --how newest
+docker exec -it python-dota python /root/dotaScience/hook/get_match_history.py --how newest
 ```
 
 Caso o processo seja interrompidoo, é necessário dar inicio a partir da última partida coletada:
 
 ```bash
-python dotaScience/hook/get_match_history.py --how oldest
+docker exec -it python-dota python /root/dotaScience/hook/get_match_history.py --how oldest
 ```
 
 ### Obtendo detalhes das partidas coletadas
 
 ```bash
-python dotaScience/hook/get_match_details.py
+docker exec -it python-dota python /root/dotaScience/hook/get_match_details.py
 ```
 
 ### Migrando dados do MongoDB para MariaDB
 
 ```bash
-python dotaScience/magic_wand/mongo_to_maria.py
+docker exec -it python-dota python /root/dotaScience/magic_wand/mongo_to_maria.py
 ```

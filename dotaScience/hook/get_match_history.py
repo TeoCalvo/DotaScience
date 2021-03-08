@@ -77,7 +77,7 @@ def get_newest_matches(db_collection):
         return None   
     
     while min_match_id > max_match_id and data is not None:
-        data = get_and_save(min_match_id=min_match_id, db_collection=db_collection)
+        data = get_and_save(min_match_id=min_match_id, max_match_id=max_match_id, db_collection=db_collection)
         min_match_id = min([i["match_id"] for i in data])
 
 def main():

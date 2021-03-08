@@ -1,4 +1,7 @@
-select account_id,
+select  '{dt_ref}' as dt_ref,
+        account_id,
+        min(datediff('{dt_ref}', dt_match)) as recencia,
+        max(dt_match) as dt_max_match,
         count(distinct match_id) as freq,
         avg( win ) as win_pct,
         sum( win ) as win_qtd,
@@ -26,9 +29,7 @@ select account_id,
         avg( isRadiant ) as  isRadiant_avg,
         avg( kda ) as  kda_avg,
         avg( kills_per_min ) as  kills_per_min_avg,
-        avg( lane ) as  lane_avg,
         avg( lane_efficiency ) as  lane_efficiency_avg,
-        avg( lane_efficiency_pct ) as  lane_efficiency_pct_avg,
         avg( lane_kills ) as  lane_kills_avg,
         avg( last_hits ) as  last_hits_avg,
         avg( level ) as  level_avg,
@@ -320,7 +321,8 @@ select account_id,
 
 from tb_match_player
 
-where dt_match >= ADDDATE('2021-02-25' , INTERVAL -6 MONTH)
+where dt_match >= ADDDATE('{dt_ref}' , INTERVAL -6 MONTH)
+and dt_match < '{dt_ref}'
 and game_mode = 02
 
 group by account_id
