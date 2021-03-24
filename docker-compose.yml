@@ -1,7 +1,6 @@
 version: "3"
 
 volumes:
-  mariadb-data:
   mongodb-data:
 
 services:
@@ -14,17 +13,6 @@ services:
     ports:
       - "27017:27017"
 
-  mariadb:
-    container_name: maria-dota
-    image: mariadb
-    restart: unless-stopped
-    volumes:
-      - mariadb-data:/var/lib/mysql
-    environment: 
-      - MYSQL_ROOT_PASSWORD=teomewhy
-    ports:
-      - "3306:3306"
-
   python:
     build:
       context: .
@@ -35,4 +23,3 @@ services:
       - .:/root
     links:
       - mongodb
-      - mariadb
