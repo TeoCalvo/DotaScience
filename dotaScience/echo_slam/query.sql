@@ -1,7 +1,10 @@
 select  '{dt_ref}' as dt_ref,
+        year('{dt_ref}') as partition_year,
+        month('{dt_ref}') as partition_month,
+        day('{dt_ref}') as partition_day,
         account_id,
-        min(datediff('{dt_ref}', dt_match)) as recencia,
-        max(dt_match) as dt_max_match,
+        min(datediff('{dt_ref}', dt_start_time)) as recencia,
+        max(dt_start_time) as dt_max_match,
         count(distinct match_id) as freq,
         avg( win ) as win_pct,
         sum( win ) as win_qtd,
@@ -38,7 +41,6 @@ select  '{dt_ref}' as dt_ref,
         avg( observer_kills ) as  observer_kills_avg,
         avg( observer_uses ) as  observer_uses_avg,
         avg( purchase_tpscroll ) as  purchase_tpscroll_avg,
-        avg( rank_tier ) as  rank_tier_avg,
         avg( roshan_kills ) as  roshan_kills_avg,
         avg( sentry_kills ) as  sentry_kills_avg,
         avg( sentry_uses ) as  sentry_uses_avg,
@@ -69,7 +71,6 @@ select  '{dt_ref}' as dt_ref,
         sum( observer_kills ) as  observer_kills_sum,
         sum( observer_uses ) as  observer_uses_sum,
         sum( purchase_tpscroll ) as  purchase_tpscroll_sum,
-        sum( rank_tier ) as  rank_tier_sum,
         sum( roshan_kills ) as  roshan_kills_sum,
         sum( sentry_kills ) as  sentry_kills_sum,
         sum( sentry_uses ) as  sentry_uses_sum,
@@ -321,8 +322,8 @@ select  '{dt_ref}' as dt_ref,
 
 from tb_match_player
 
-where dt_match >= ADDDATE('{dt_ref}' , INTERVAL -6 MONTH)
-and dt_match < '{dt_ref}'
+where dt_start_time >= ADD_MONTHS('{dt_ref}' , -6)
+and dt_start_time < '{dt_ref}'
 and game_mode = 02
 
 group by account_id
