@@ -327,3 +327,4 @@ and dt_start_time < '{dt_ref}'
 and game_mode = 02
 
 group by account_id
+;

@@ -6,6 +6,7 @@ import sys
 import sqlalchemy
 import pandas as pd
 from pyspark.sql import SparkSession
+from pyspark.sql.functions import *
 
 ECHO_DIR = os.path.dirname(os.path.abspath(__file__))
 DOTA_DIR = os.path.dirname(ECHO_DIR)
@@ -18,15 +19,18 @@ from backpack import db
 
 def insert_data(dt_ref, spark, mode="overwrite"):
     select_query = db.import_query(os.path.join(ECHO_DIR, "query.sql"))
-    query = select_query.format(dt_ref = dt_ref)
-    (spark.sql(query)
-          .repartition(1)
-          .write
-          .mode(mode)
-          .format("delta")
-          .partitionBy("partition_year", "partition_month", "partition_day")
-          .save(os.path.join(os.getenv("DATA_CONTEXT"), "tb_book_player"))
+    query = select_query.format(dt_ref=dt_ref)
+    table_path = os.path.join( os.getenv("DATA_CONTEXT"), "tb_book_player")
+
+    ( spark.sql(query)
+           .repartition(1)
+           .write
+           .mode(mode)
+           .format("delta")
+           .partitionBy("partition_year", "partition_month", "partition_day")
+           .save(table_path)
     )
+
     return True
 
 def exec_loop(dt_start, dt_end, spark):
@@ -55,6 +59,9 @@ spark = ( SparkSession.builder
                       .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
                       .getOrCreate()
 )
+
+from delta.tables import *
+
 
 (spark.read
       .format("parquet")
