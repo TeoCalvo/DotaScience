@@ -63,23 +63,45 @@ pip install -r requirements.txt
 Ao rodar pela primeira vez, use o argumento '```--how newest```' , coletando assim as partidas mais recentes.
 
 ```bash
-docker exec -it python-dota python /root/dotaScience/hook/get_match_history.py --how newest
+python /root/dotaScience/hook/get_match_history.py --how newest
 ```
 
 Caso o processo seja interrompidoo, é necessário dar inicio a partir da última partida coletada:
 
 ```bash
-docker exec -it python-dota python /root/dotaScience/hook/get_match_history.py --how oldest
+python /root/dotaScience/hook/get_match_history.py --how oldest
 ```
 
 ### Obtendo detalhes das partidas coletadas
 
 ```bash
-docker exec -it python-dota python /root/dotaScience/hook/get_match_details.py
+python /root/dotaScience/hook/get_match_details.py
 ```
 
-### Migrando dados do MongoDB para MariaDB
+### Migrando dados do MongoDB para Apache Spark
+
+#### Carga Raw Incremental
 
 ```bash
-docker exec -it python-dota python /root/dotaScience/magic_wand/mongo_to_maria.py
+python /root/dotaScience/magic_wand/mongo_to_spark.py
+```
+
+#### Carga Proceed Full
+
+```bash
+python /root/dotaScience/magic_wand/match_player_raw_proceded.py
+```
+
+## Book de Variáveis
+
+### Criação do Book
+
+```bash
+python dotaScience/echo_slam/exec.py --date "2020-01-01" --create
+```
+
+### Rodadas Incrementais
+
+```bash
+python dotaScience/echo_slam/exec.py --date "2020-01-02" --date_end "2021-03-25"
 ```
