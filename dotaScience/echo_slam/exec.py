@@ -27,7 +27,7 @@ def insert_data(dt_ref, spark, mode="overwrite"):
            .write
            .mode(mode)
            .format("delta")
-           .partitionBy("partition_year", "partition_month", "partition_day")
+           .partitionBy("dt_ref")
            .save(table_path)
     )
 
@@ -73,4 +73,9 @@ if args.create:
     insert_data(args.date, spark, "overwrite")
 else:
     exec_loop( args.date, args.date_end, spark )
+
+
+path = "/home/teo/Documentos/pessoais/projetos/ensino/projetos_twitch/DotaScience/data/context/tb_book_player"
+
+df = spark.read.format("parquet").load(path)
 

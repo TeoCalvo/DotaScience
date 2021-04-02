@@ -1,7 +1,4 @@
 select  '{dt_ref}' as dt_ref,
-        year('{dt_ref}') as partition_year,
-        month('{dt_ref}') as partition_month,
-        day('{dt_ref}') as partition_day,
         account_id,
         min(datediff('{dt_ref}', dt_start_time)) as recencia,
         max(dt_start_time) as dt_max_match,
