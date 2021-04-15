@@ -4,6 +4,14 @@ pipeline {
 
     stages {
 
+        stage("Clear Env"){
+            steps{
+                sh "docker stop dota_con"
+                sh "docker rm dota_con"
+                sh "docker rmi dota_img"
+            }
+        }
+
         stage("Build Image"){
             steps{
                 sh "docker build -t dota_img ."
@@ -12,7 +20,7 @@ pipeline {
        
         stage("Container up"){
             steps{
-                sh "docker run -t dota_con dota_img"
+                sh "docker run --name dota_con dota_img"
             }
         }
 
