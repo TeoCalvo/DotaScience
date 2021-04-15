@@ -1,0 +1,24 @@
+pipeline {
+    agent any
+
+    stages{
+
+        stage("Conda Env"){
+            steps{
+                sh "conda activate dotaspark"
+            }
+        }
+
+        stage("History Matches"){
+            steps{
+                sh "python dotaScience/hook/get_match_history.py"
+            }
+        }
+
+        stage("Match Details"){
+            steps{
+                sh "python dotaScience/hook/get_match_details.py"
+            }
+        }
+    }
+}

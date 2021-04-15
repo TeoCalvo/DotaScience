@@ -39,7 +39,7 @@ def exec_loop(dt_start, dt_end, spark):
 
     while date_end >= date_start:
         dt_start = date_start.strftime("%Y-%m-%d")
-        print(dt_start)        
+        print(dt_start)
         insert_data(dt_start, spark, "append")
         date_start += datetime.timedelta(days=1)
     return True
