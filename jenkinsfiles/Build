@@ -1,0 +1,20 @@
+pipeline {
+
+    agent any
+
+    stages {
+
+        stage("Build Image"){
+            steps{
+                sh "docker build -t dota_img ."
+            }
+        }
+       
+        stage("Container up"){
+            steps{
+                sh "docker run -t dota_con dota_img"
+            }
+        }
+
+    }
+}
