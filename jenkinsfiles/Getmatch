@@ -5,13 +5,13 @@ pipeline {
 
         stage("History Matches"){
             steps{
-                sh "docker exec dota_con python dotaScience/hook/get_match_history.py"
+                sh "docker exec dota_con python hook/get_match_history.py"
             }
         }
 
         stage("Match Details"){
             steps{
-                sh "docker exec dota_con python dotaScience/hook/get_match_details.py"
+                sh "docker exec dota_con python hook/get_match_details.py"
             }
         }
     }
