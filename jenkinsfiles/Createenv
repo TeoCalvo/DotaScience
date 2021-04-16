@@ -1,0 +1,14 @@
+pipeline {
+
+    agent any
+
+    stages {
+
+        stage("Container up"){
+            steps{
+                sh "docker-compose up -d"
+            }
+        }
+
+    }
+}
