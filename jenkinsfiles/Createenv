@@ -4,11 +4,16 @@ pipeline {
 
     stages {
 
-        stage("Container up"){
+        stage("Build"){
             steps{
-                sh "docker-compose up -d"
+                sh "docker build -t dota_img ."
             }
         }
 
+        stage("Up"){
+            steps{
+                sh "docker run --name dota_con dota_img"
+            }
+        }
     }
 }
