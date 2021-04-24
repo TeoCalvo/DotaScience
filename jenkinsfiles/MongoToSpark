@@ -1,0 +1,13 @@
+pipeline {
+    agent any
+
+    stages{
+
+        stage("History Matches"){
+            steps{
+                sh "docker exec python-dota python root/dotaScience/magic_wand/mongo_to_spark.py"
+            }
+        }
+
+    }
+}

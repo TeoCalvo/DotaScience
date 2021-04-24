@@ -17,10 +17,9 @@ import xgboost as xgb
 from feature_engine.imputation import ArbitraryNumberImputer
 from feature_engine.discretisation import DecisionTreeDiscretiser
 
-
 # %%
-#ORACLE_DIR = os.path.dirname(os.path.abspath(__file__))
-ORACLE_DIR = os.path.abspath(".")
+ORACLE_DIR = os.path.dirname(os.path.abspath(__file__))
+#ORACLE_DIR = os.path.abspath(".")
 SRC_DIR = os.path.dirname(ORACLE_DIR)
 BASE_DIR = os.path.dirname(SRC_DIR)
 DATA_DIR = os.path.join(BASE_DIR, "data")
@@ -34,26 +33,30 @@ file_path = os.path.join(TABLE_PATH, file_path)
 # %%
 
 # Importando o dataset
+print("Importando dataset...")
 df_full = pd.read_csv(file_path)
 
 columns = df_full.columns.tolist()
-
 features =list(set(columns) - set(['match_id', 'dt_start_time', 'radiant_win']))
 target = 'radiant_win'
 
 df_full[features] = df_full[features].dropna(how="all")
-
+print("ok.")
 
 # %%
 # Separa entre treinamento e teste
+
+print("Separando em base de treino e teste...")
 X_train, X_test, y_train, y_test = model_selection.train_test_split( df_full[features],
                                                                      df_full[target],
                                                                      random_state=42,
                                                                      test_size=0.1 )
 
+print("ok.")
 
 # %%
 
+print("Ajustando modelo em nosso pipeline...")
 arbitrary_imputer = ArbitraryNumberImputer(arbitrary_number=-999,
                                            variables=features)
 
@@ -66,16 +69,21 @@ disc = DecisionTreeDiscretiser(cv=3,
 pca = decomposition.PCA(n_components=120,
                         random_state=42)
 
+
+best_pars = {'subsample': 0.7, 'n_estimators': 100, 'max_depth': 5, 'learning_rate': 0.2}
+
+clf_xgb = xgb.XGBClassifier(nthread=8,
+                            eval_metric='auc',
+                            random_state=42,
+                            **best_pars)
+
+"""
 params = {
     "n_estimators":[100,500,600,700,800],
     "max_depth":[4,5,6,7,10],
     "subsample":[0.1,0.2,0,3, 0.7, 0.75,0.8,0.9, 0.99],
     "learning_rate":[0.1, 0.2, 0.5, 0.7, 0.8, 0.9, 0.99],
 }
-
-clf_xgb = xgb.XGBClassifier(nthread=8,
-                            eval_metric='auc',
-                            random_state=42)
 
 random_search = RandomizedSearchCV(clf_xgb,
                                    params,
@@ -84,24 +92,33 @@ random_search = RandomizedSearchCV(clf_xgb,
                                    random_state=42,
                                    n_iter=20,
                                    cv=4)
+"""
 
 my_pipe = pipeline.Pipeline( [("imputer", arbitrary_imputer), 
                               ("discretizator", disc),
                               ("pca", pca),
-                              ("model", random_search)])
+                              ("model", clf_xgb)])
 
 my_pipe.fit(X_train, y_train)
 
-# %%
- 
-y_test_pred = my_pipe.predict(X_test)
-y_test_prob = my_pipe.predict_proba(X_test)
+print("ok.")
 
 # %%
-metrics.roc_auc_score( y_test, y_test_prob[:,1] )
+print("Analisando performance na base de teste...") 
+y_test_pred = my_pipe.predict(X_test)
+y_test_prob = my_pipe.predict_proba(X_test)
+auc_score = metrics.roc_auc_score(y_test, y_test_prob[:,1])
+print("AUC:", auc_score)
+print("ok.")
+
 # %%
-pd.DataFrame(random_search.cv_results_)
-# %%
-random_search.best_params_
-# %%
-bets = {'subsample': 0.7, 'n_estimators': 100, 'max_depth': 5, 'learning_rate': 0.2}
+
+print("Salvando o modelo...")
+model_dict = {"model": my_pipe,
+              "features"  : X_train.columns.tolist(),
+              "auc_test" : auc_score
+              }
+
+model = pd.Series(model_dict)
+model.to_pickle(os.path.join(ORACLE_DIR, "models", "model.pkl"))
+print("Ok.")

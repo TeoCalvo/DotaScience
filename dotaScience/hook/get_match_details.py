@@ -20,7 +20,7 @@ def get_data(match_id, **kwargs):
 
     except json.JSONDecodeError as err:
         print(err)
-        return None   
+        return None
 
 def save_data(data, db_collection):
     try:
@@ -65,11 +65,12 @@ def main(api_key):
             continue
 
 if __name__ == "__main__":
+    
     # Carrega o dotenv
     dotenv.load_dotenv(dotenv.find_dotenv())
 
     API_KEY = os.getenv("API_KEY")
     MONGODB_IP = os.getenv("MONGODB_IP")
     MONGODB_PORT = int(os.getenv("MONGODB_PORT"))
-    
+
     main(API_KEY)

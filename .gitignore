@@ -1,8 +1,15 @@
 .vscode/
+
 *.pyc
 *.csv
 *.xlsx
 *.db
 data/
+
 select.sql
+
 *.env
+.bash_history
+.python_history
+
+*.pkl
