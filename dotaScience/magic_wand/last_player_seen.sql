@@ -7,5 +7,6 @@ WITH TB_FLAG_PLAYER AS (
 )
 
 SELECT *
+       now() as dt_atualizacao
 FROM TB_FLAG_PLAYER
 WHERE dt_update = 1
