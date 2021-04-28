@@ -7,6 +7,8 @@ import argparse
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
 
+dotenv.load_dotenv(dotenv.find_dotenv())
+
 ORACLE_DIR = os.path.dirname(os.path.abspath(__file__))
 #ORACLE_DIR = os.path.join( os.path.abspath("."), "dotaScience, oracle")
 SRC_DIR = os.path.dirname(ORACLE_DIR)
@@ -16,7 +18,7 @@ DATA_DIR = os.path.join(BASE_DIR, "data")
 DATA_TRAIN_DIR = os.path.join(DATA_DIR, "train")
 
 CONTEXT_DATA_DIR = os.path.join(DATA_DIR, "context")
-PROCEDED_DATA_DIR = os.path.join(DATA_DIR, "proceded")
+PROCEDED_DATA_DIR = os.getenv("PROCEEDED")
 
 sys.path.insert(0, SRC_DIR)
 

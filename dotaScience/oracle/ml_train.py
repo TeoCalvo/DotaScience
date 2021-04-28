@@ -69,7 +69,6 @@ disc = DecisionTreeDiscretiser(cv=3,
 pca = decomposition.PCA(n_components=120,
                         random_state=42)
 
-
 best_pars = {'subsample': 0.7, 'n_estimators': 100, 'max_depth': 5, 'learning_rate': 0.2}
 
 clf_xgb = xgb.XGBClassifier(nthread=8,
@@ -120,5 +119,5 @@ model_dict = {"model": my_pipe,
               }
 
 model = pd.Series(model_dict)
-model.to_pickle(os.path.join(ORACLE_DIR, "models", "model.pkl"))
+model.to_pickle(os.path.join(ORACLE_DIR, "models", "model_ale.pkl"))
 print("Ok.")

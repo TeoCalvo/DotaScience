@@ -13,3 +13,5 @@ select.sql
 .python_history
 
 *.pkl
+
+.ivy2

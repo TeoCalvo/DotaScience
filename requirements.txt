@@ -9,5 +9,6 @@ toml==0.10.2
 pandas==1.2.3
 delta==0.4.2
 python-dotenv==0.17.0
-scikit_learn==0.24.1
+PyMySQL==1.0.2
 pyspark==3.1.1
+scikit_learn==0.24.1

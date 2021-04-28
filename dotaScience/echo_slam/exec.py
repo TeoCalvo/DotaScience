@@ -5,30 +5,28 @@ import sys
 
 import sqlalchemy
 import pandas as pd
-from pyspark.sql import SparkSession
-from pyspark.sql.functions import *
 
-ECHO_DIR = os.path.dirname(os.path.abspath(__file__))
-DOTA_DIR = os.path.dirname(ECHO_DIR)
-BASE_DIR = os.path.dirname(DOTA_DIR)
+import dotenv
 
-# Define o caminho de nosso projeto
-sys.path.insert(0, DOTA_DIR)
+dotenv.load_dotenv(dotenv.find_dotenv())
+
+sys.path.insert(0, os.getenv("DOTASCIENCE"))
 
 from backpack import db
 
-def insert_data(dt_ref, spark, mode="overwrite"):
-    select_query = db.import_query(os.path.join(ECHO_DIR, "query.sql"))
+def process_data(dt_ref, spark):
+    query_path = os.path.join( os.getenv("ECHO_SLAM") , "query.sql")
+    select_query = db.import_query(query_path)
     query = select_query.format(dt_ref=dt_ref)
-    table_path = os.path.join( os.getenv("DATA_CONTEXT"), "tb_book_player")
+    table_path = os.path.join( os.getenv("CONTEXT"), "tb_book_player")
 
     ( spark.sql(query)
            .repartition(1)
            .write
-           .mode(mode)
-           .format("delta")
-           .partitionBy("dt_ref")
-           .save(table_path)
+           .option("mergeSchema", "true")
+           .mode("overwrite")
+           .format("parquet")
+           .save(os.path.join(table_path, f"dt_ref={dt_ref}"))
     )
 
     return True
@@ -40,42 +38,31 @@ def exec_loop(dt_start, dt_end, spark):
     while date_end >= date_start:
         dt_start = date_start.strftime("%Y-%m-%d")
         print(dt_start)
-        insert_data(dt_start, spark, "append")
+        process_data(dt_start, spark)
         date_start += datetime.timedelta(days=1)
     return True
 
-date_now = datetime.datetime.now().strftime("%Y-%m-%d")
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--date", help="Data para extração", type=str, default=date_now)
-parser.add_argument("--create", help="Define se a tabela deve ser criada", action="store_true")
-parser.add_argument("--date_end", help="Define a data final para processo")
-args = parser.parse_args()
+def main(date_start, date_stop):
+    
+    spark = db.create_spark_session()
 
-spark = ( SparkSession.builder
-                      .appName("Dota Spark")
-                      .config("spark.jars.packages", "io.delta:delta-core_2.12:0.8.0")
-                      .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
-                      .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
-                      .getOrCreate()
-)
+    tb_path = os.path.join(os.getenv("RAW"), "tb_match_player")
+    view_name  = db.register_temp_view(spark, tb_path)
 
-from delta.tables import *
+    if args.create:
+        process_data(date_start, spark)
+    else:
+        exec_loop( date_start, date_stop, spark )
 
+if __name__ == "__main__":
 
-(spark.read
-      .format("parquet")
-      .load(os.path.join(os.getenv("DATA_PROCEDED"), "tb_match_player"))
-      .createOrReplaceTempView("tb_match_player")
-)
+    date_now = datetime.datetime.now().strftime("%Y-%m-%d")
 
-if args.create:
-    insert_data(args.date, spark, "overwrite")
-else:
-    exec_loop( args.date, args.date_end, spark )
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--date_start", help="Data para extração", type=str, default=date_now)
+    parser.add_argument("--create", help="Define se a tabela deve ser criada", action="store_true")
+    parser.add_argument("--date_stop", help="Define a data final para processo")
+    args = parser.parse_args()
 
-
-path = "/home/teo/Documentos/pessoais/projetos/ensino/projetos_twitch/DotaScience/data/context/tb_book_player"
-
-df = spark.read.format("parquet").load(path)
-
+    main(args.date_start, args.date_stop)

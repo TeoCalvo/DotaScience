@@ -1,7 +1,7 @@
 select  '{dt_ref}' as dt_ref,
-        account_id,
-        min(datediff('{dt_ref}', dt_start_time)) as recencia,
-        max(dt_start_time) as dt_max_match,
+        cast(account_id as bigint) as account_id,
+        min(datediff('{dt_ref}', dt_match)) as recencia,
+        max(dt_match) as dt_max_match,
         count(distinct match_id) as freq,
         avg( win ) as win_pct,
         sum( win ) as win_qtd,
@@ -317,11 +317,11 @@ select  '{dt_ref}' as dt_ref,
         CAST( avg(case when hero_id = 128 then 1 else 0 end) as double) as hero_128_avg,
         CAST( avg(case when hero_id = 129 then 1 else 0 end) as double) as hero_129_avg
 
-from tb_match_player
+from raw_tb_match_player
 
-where dt_start_time >= ADD_MONTHS('{dt_ref}' , -6)
-and dt_start_time < '{dt_ref}'
+where dt_match >= ADD_MONTHS('{dt_ref}' , -6)
+and dt_match < '{dt_ref}'
 and game_mode = 02
 
-group by account_id
+group by cast(account_id as bigint)
 ;

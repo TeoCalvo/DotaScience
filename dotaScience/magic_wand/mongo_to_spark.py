@@ -1,14 +1,18 @@
+import json
+import os
+import sys
+import argparse
+
 import numpy as np
 import pandas as pd
 import sqlalchemy
+
 from pymongo import MongoClient
 from pyspark.sql import SparkSession
 import pyspark
-import os
+
 import dotenv
 from tqdm import tqdm
-import json
-import sys
 
 dotenv.load_dotenv( dotenv.find_dotenv() )
 
@@ -90,12 +94,14 @@ def main():
     for i in tqdm(cursor):
         df = df.append( get_players(i, columns) )
 
-        if df.shape[0] >= 10000:
+        if df.shape[0] >= 50000:
             insert_players(df, spark, "append")
             df = pd.DataFrame()
     
-    if 0 < df.shape[0] < 10000:
+    if 0 < df.shape[0] < 50000:
         insert_players(df, spark, "append")
         
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--chunk", "-c", help="Chunk size value", type=int, default=50000)
     main()

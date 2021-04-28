@@ -16,7 +16,7 @@ services:
   python:
     build:
       context: .
-      dockerfile: ./dockerfile
+      dockerfile: ./Dockerfile
     container_name: python-dota
     restart: unless-stopped
     volumes:

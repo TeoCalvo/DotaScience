@@ -9,10 +9,15 @@ import numpy as np
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
 
+import dotenv
+
+dotenv.load_dotenv(dotenv.find_dotenv())
+
 #ORACLE_DIR = os.path.dirname(os.path.abspath(__file__))
 #SRC_DIR = os.path.dirname(ORACLE_DIR)
 
 def get_live_games():
+    api_key = os.getenv("VALVE_API")
     url = f"http://api.steampowered.com/IDOTA2Match_570/GetLiveLeagueGames/v1/?key={api_key}"
     response = requests.get(url)
     data = response.json()
@@ -75,7 +80,7 @@ data = get_live_games()
 match_players_data = get_team_players_id(data)
 
 # Transforma em tabular
-df_players_id = dict_to_table( match_players_data)
+df_players_id = dict_to_table(match_players_data)
 
 # Abre conexão com spark
 spark = open_spark_con()
@@ -94,4 +99,8 @@ df_predict = spark.sql(query).toPandas()
 
 model = pd.read_pickle("/home/teo/Documentos/ensino/twitch/projetos/DotaScience/dotaScience/oracle/models/model.pkl")
 
-model["model"].predict_proba( df_predict[ model["features"] ] )
+pred = model["model"].predict_proba( df_predict[ model["features"] ] )
+
+df_predict["proba_radiant"] = pred[:,1]
+
+print(df_predict)
