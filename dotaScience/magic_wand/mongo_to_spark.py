@@ -76,7 +76,7 @@ def get_match_list(spark, db_collection):
     match_list = db_collection.find({"match_id" : {"$nin": match_ids_spark}})
     return match_list
 
-def main():
+def main(chunk_size):
 
     dotenv.load_dotenv(dotenv.find_dotenv())
 
@@ -94,14 +94,15 @@ def main():
     for i in tqdm(cursor):
         df = df.append( get_players(i, columns) )
 
-        if df.shape[0] >= 50000:
+        if df.shape[0] >= chunk_size:
             insert_players(df, spark, "append")
             df = pd.DataFrame()
     
-    if 0 < df.shape[0] < 50000:
+    if 0 < df.shape[0] < chunk_size:
         insert_players(df, spark, "append")
         
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--chunk", "-c", help="Chunk size value", type=int, default=50000)
-    main()
+    args = parser.parse_args()
+    main(args.chunk)
