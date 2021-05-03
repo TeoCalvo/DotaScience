@@ -5,7 +5,7 @@ pipeline {
 
         stage("Exec"){
             steps{
-                sh "docker exec python-dota python root/dotaScience/echos_slam/exec.py"
+                sh "docker exec python-dota python root/dotaScience/echo_slam/exec.py"
             }
         }
 
