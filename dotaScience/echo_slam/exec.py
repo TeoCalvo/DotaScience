@@ -31,17 +31,13 @@ def process_data(dt_ref, spark):
     return True
 
 
-def main(date_start, date_stop):
+def main(date, date_stop):
     
     spark = db.create_spark_session()
-
     tb_path = os.path.join(os.getenv("RAW"), "tb_match_player")
     view_name  = db.register_temp_view(spark, tb_path)
+    process_data(date, spark)
 
-    if args.create:
-        process_data(date_start, spark)
-    else:
-        exec_loop( date_start, date_stop, spark )
 
 if __name__ == "__main__":
 
@@ -51,4 +47,4 @@ if __name__ == "__main__":
     parser.add_argument("--date", help="Data para extração", type=str, default=date_now)
     args = parser.parse_args()
 
-    main(args.date_start, args.date)
+    main(args.date, args.date)

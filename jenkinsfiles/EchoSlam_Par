@@ -1,0 +1,17 @@
+pipeline {
+    agent any
+
+    parameters{
+        string(name: 'DATE', defaultValue: '2021-01-01', description: 'Data para extração')
+    }
+
+    stages{
+
+        stage("Exec"){
+            steps{
+                sh "docker exec python-dota python root/dotaScience/echo_slam/exec.py --date ${params.DATE}"
+            }
+        }
+
+    }
+}
