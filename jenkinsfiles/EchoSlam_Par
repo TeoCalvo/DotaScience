@@ -9,7 +9,7 @@ pipeline {
 
         stage("Exec"){
             steps{
-                sh "docker exec python-dota python root/dotaScience/echo_slam/exec.py --date ${params.DATE}"
+                sh 'docker exec python-dota python root/dotaScience/echo_slam/exec.py --date "${params.DATE}"'
             }
         }
 
