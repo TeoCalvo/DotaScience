@@ -31,7 +31,7 @@ def process_data(dt_ref, spark):
     return True
 
 
-def main(date, date_stop):
+def run(date):
     
     spark = db.create_spark_session()
     tb_path = os.path.join(os.getenv("RAW"), "tb_match_player")
@@ -47,4 +47,4 @@ if __name__ == "__main__":
     parser.add_argument("--date", help="Data para extração", type=str, default=date_now)
     args = parser.parse_args()
 
-    main(args.date, args.date)
+    exec(args.date)
