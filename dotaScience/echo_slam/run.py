@@ -9,7 +9,6 @@ import pandas as pd
 import dotenv
 
 dotenv.load_dotenv(dotenv.find_dotenv())
-
 sys.path.insert(0, os.getenv("DOTASCIENCE"))
 
 from backpack import db
@@ -31,38 +30,21 @@ def process_data(dt_ref, spark):
 
     return True
 
-def exec_loop(dt_start, dt_end, spark):
-    date_start = datetime.datetime.strptime(dt_start, "%Y-%m-%d")
-    date_end = datetime.datetime.strptime(dt_end, "%Y-%m-%d")
 
-    while date_end >= date_start:
-        dt_start = date_start.strftime("%Y-%m-%d")
-        print(dt_start)
-        process_data(dt_start, spark)
-        date_start += datetime.timedelta(days=1)
-    return True
-
-
-def main(date_start, date_stop):
+def run(date):
     
     spark = db.create_spark_session()
-
     tb_path = os.path.join(os.getenv("RAW"), "tb_match_player")
     view_name  = db.register_temp_view(spark, tb_path)
+    process_data(date, spark)
 
-    if args.create:
-        process_data(date_start, spark)
-    else:
-        exec_loop( date_start, date_stop, spark )
 
 if __name__ == "__main__":
 
     date_now = datetime.datetime.now().strftime("%Y-%m-%d")
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--date_start", help="Data para extração", type=str, default=date_now)
-    parser.add_argument("--create", help="Define se a tabela deve ser criada", action="store_true")
-    parser.add_argument("--date_stop", help="Define a data final para processo")
+    parser.add_argument("--date", help="Data para extração", type=str, default=date_now)
     args = parser.parse_args()
 
-    main(args.date_start, args.date_stop)
+    exec(args.date)

@@ -1,0 +1,13 @@
+pipeline {
+    agent any
+
+    stages{
+
+        stage("Exec"){
+            steps{
+                sh "docker exec python-dota python /root/dotaScience/hook/get_live_games.py"
+            }
+        }
+
+    }
+}

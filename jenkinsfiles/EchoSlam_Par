@@ -1,0 +1,19 @@
+pipeline {
+    agent any
+
+    parameters{
+        string(name: 'START', defaultValue: '2021-01-01', description: 'Data para início da extração')
+
+        string(name: 'STOP', defaultValue: '2021-01-01', description: 'Data para fim da extração')
+    }
+
+    stages{
+
+        stage("Exec"){
+            steps{
+                sh "docker exec python-dota python root/dotaScience/echo_slam/loop.py --start ${params.START} --stop ${params.STOP}"
+            }
+        }
+
+    }
+}
