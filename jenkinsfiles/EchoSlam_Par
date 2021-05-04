@@ -11,7 +11,7 @@ pipeline {
 
         stage("Exec"){
             steps{
-                sh 'docker exec python-dota python root/dotaScience/echo_slam/loop.py --start ${params.START} --stop ${params.STOP}'
+                sh "docker exec python-dota python root/dotaScience/echo_slam/loop.py --start ${params.START} --stop ${params.STOP}"
             }
         }
 
