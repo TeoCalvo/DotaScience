@@ -1,6 +1,7 @@
 import json
 import os
 import sys
+import datetime
 
 import dotenv
 import requests
@@ -41,7 +42,9 @@ df_matches = df_matches.dropna(subset=['radiant_team', "dire_team"], how="all")
 
 df_final = df_matches.merge(df_predict, how='left', on="match_id")
 
-df_final.to_excel(os.path.join(os.getenv("DATA"), "df_final.xlsx"))
 
-columns = ["match_id", "radiant_team", "dire_team", "proba_radiant"]
-df_final[columns].to_excel(os.path.join( os.getenv("DATA"), "df_predict.xlsx"))
+df_final["update_at"] = datetime.datetime.now()
+
+columns = ["match_id", "radiant_team", "dire_team", "proba_radiant", "update_at"]
+
+df_final[columns].to_csv(os.path.join( os.getenv("DATA"), "df_predict.csv"), index=False)
