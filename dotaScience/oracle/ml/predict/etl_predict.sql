@@ -1,10 +1,12 @@
 with tb_match as (
 
-    select *
-    from match_players
+    select *,
+            case when team = 0 then 1 else 0 end as isRadiant
+    from raw_tb_live_games
+
+    where team in (0,1)
 
 ),
-
 
 tb_join as (
 
@@ -12,23 +14,10 @@ tb_join as (
 
     from tb_match as t1
 
-    left join tb_book_player as t2
-    on t1.player_id = t2.account_id
+    left join context_tb_book_player as t2
+    on t2.account_id = t1.account_id
 
-),
-
-tb_window_flag as (
-
-    select *,
-           row_number() over (partition by player_id order by dt_ref desc) as order_dt
-    from tb_join
-),
-
-tb_filter_recencia as (
-
-    select *
-    from tb_window_flag
-    where order_dt = 1
+    where t2.dt_ref = (select max( dt_ref ) from context_tb_book_player)
 
 ),
 
@@ -353,7 +342,7 @@ tb_join_group as (
             avg( case when t1.isRadiant = 0 then t1.hero_128_avg end ) as hero_128_avg_d,
             avg( case when t1.isRadiant = 0 then t1.hero_129_avg end ) as hero_129_avg_d
 
-    from tb_filter_recencia as t1
+    from tb_join as t1
     group by t1.match_id
 
 )
