@@ -43,5 +43,5 @@ df_final = df_matches.merge(df_predict, how='left', on="match_id")
 
 df_final.to_excel(os.path.join(os.getenv("DATA"), "df_final.xlsx"))
 
-columns = ["match_id", "radiant_team", "dire_team", "prob_radiant"]
+columns = ["match_id", "radiant_team", "dire_team", "proba_radiant"]
 df_final[columns].to_excel(os.path.join( os.getenv("DATA"), "df_predict.xlsx"))
