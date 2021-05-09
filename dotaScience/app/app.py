@@ -15,8 +15,6 @@ def create_team_label(row, team="radiant_team"):
     else:
         return row[team] + " (" + str(1 - row["proba_radiant"] * 100) + "%)"
 
-
-@st.cache
 def load_data():
     df = pd.read_csv( "data/df_predict.csv")
     df = df.dropna(subset=["proba_radiant"], how="any")

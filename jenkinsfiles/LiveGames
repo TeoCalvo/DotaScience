@@ -3,11 +3,16 @@ pipeline {
 
     stages{
 
-        stage("Exec"){
+        stage("Load games"){
             steps{
                 sh "docker exec python-dota python /root/dotaScience/hook/get_live_games.py"
             }
         }
 
+        stage("Preditions"){
+            steps{
+                sh "docker exec python-dota python /root/dotaScience/oracle/ml/predict/live_games_prediction.py"
+            }
+        }
     }
 }
