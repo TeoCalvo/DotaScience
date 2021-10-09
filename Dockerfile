@@ -1,6 +1,6 @@
 FROM openjdk:8
 
-COPY --from=python:3 / /
+COPY --from=python:3.9 / /
 
 COPY requirements.txt .
 

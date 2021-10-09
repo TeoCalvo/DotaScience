@@ -61,6 +61,7 @@ def transform(raw):
         df_full = df_players.copy()
     
     df_full = df_full.fillna("").astype(str)
+    df_full = df_full[df_full["match_id"].astype(int)>0]
     return df_full
 
 def save_data(data, spark):
